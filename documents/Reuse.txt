@@ -1,0 +1,84 @@
+EXTENSÃO: Fundamentos de Sistemas de Informação
+Relatório 01
+
+
+1.1 Caracterização da Organização
+Nome CERSAM - Centro de Referência em Saúde Mental Barreiro.
+Endereço R. Des. Ribeiro da Luz, 29 - Barreiro, Belo Horizonte - MG,
+30640-240.
+Tempo de
+existência
+Desde 1993. (31 anos)
+Número de sócios Trata-se de um serviço público.
+Número de
+funcionários
+Por ser um serviço público, é difícil determinar o número exato.
+1.2 Foco do Negócio
+O CERSAM (Centro de Referência em Saúde Mental) é uma organização pública
+sem fins lucrativos, cujo foco de negócio é fornecer atendimento especializado e
+temporário a pessoas em situação de crise psiquiátrica. O serviço tem como
+objetivo a estabilização dos pacientes em curto prazo, garantindo um tratamento
+humanizado e integrativo. Após a estabilização da crise, os pacientes são
+encaminhados para acompanhamento contínuo em outros serviços da rede de
+saúde, como centros de saúde, onde podem receber suporte e monitoramento a
+longo prazo.
+1.3 Visita inicial
+O contato inicial foi estabelecido pelo grupo em uma visita online ao CERSAM do
+Barreiro, realizada no dia 03/09/2023. Durante essa conversa online, o grupo foi
+recebido por Isadora Ventura, residente em psiquiatria do hospital. Ela forneceu
+uma visão geral sobre o funcionamento do CERSAM e explicou o sistema de
+doação de roupas. Isadora destacou que as doações são geralmente feitas por
+voluntários, incluindo os próprios funcionários, e as roupas são distribuídas para
+os usuários em situação de vulnerabilidade.
+1
+1.4 Tecnologia da Informação
+O CERSAM do Barreiro conta com 9 computadores, 1 smartphone e 3 telefones
+fixos. No que diz respeito à tecnologia da informação, a organização utiliza o
+sistema MV, que é voltado para a gestão e evolução de prontuários dos pacientes,
+garantindo a continuidade e o registro adequado dos tratamentos. Entretanto, o
+CERSAM não faz uso de nenhum software específico para a gestão ou
+distribuição das doações de roupas.
+1.5 Cronograma
+Atividade Responsável Data/Período
+Entrar em contato com o
+cersam
+Sofia 03/09/2024
+Fazer slides Emili e Matheus 03/09/2024
+Apresentar e preparar
+roteiro de apresentação
+Samuel 03/09/2024
+Relatório Ana Clara e Julia 03/09/2024
+1.6 Outras informações
+Criamos uma plataforma sem fins lucrativos chamada ReUse, com o objetivo de
+facilitar a doação de roupas e promover um ciclo de vida mais sustentável para as
+peças têxteis. Nossa missão é tornar o processo de doação mais fácil e intuitivo,
+incentivando a troca de roupas que não são mais usadas, ao mesmo tempo em
+que apoiamos aqueles que estão em necessidade. Essa abordagem não apenas
+beneficia indivíduos em situação de vulnerabilidade, mas também contribui para a
+preservação ambiental ao reduzir a poluição causada pelo descarte inadequado
+de roupas.
+Segundo informações do G1, roupas feitas a partir de fibras sintéticas, como
+poliéster de náilon, derivadas do petróleo, podem levar até 200 anos para se
+decompor. Ao contrário das fibras naturais, que retornam ao meio ambiente de
+forma mais rápida e segura, os produtos sintéticos permanecem no ambiente por
+séculos. O modelo de "fast fashion" intensifica esses impactos ao promover a
+produção rápida e em larga escala, resultando em um aumento significativo dos
+resíduos têxteis e na degradação ambiental. Ao fomentar a doação de roupas,
+nossa plataforma ajuda a prolongar o ciclo de vida das peças, reduzindo a
+quantidade de resíduos e incentivando escolhas mais sustentáveis.
+Além disso, a crescente população em situação de rua no Brasil, que aumentou
+significativamente em 2022, sublinha a necessidade urgente de apoio. Segundo a
+Universidade Federal de Minas Gerais, mais de 26 mil pessoas foram registradas
+em situação de rua apenas entre janeiro e maio de 2022, elevando o total nacional
+para mais de 180 mil. Cidades como São Paulo enfrentam um aumento alarmante
+na população de rua, com 68% dessa população sendo negra e 87% homens,
+muitos deles na faixa etária de 18 a 59 anos. A falta de políticas públicas eficazes
+e a crise social agravada, especialmente durante os períodos frios, destacam a
+necessidade de ação imediata.
+2
+Nossa plataforma ReUse visa enfrentar essa crise ao oferecer um canal acessível
+para a doação de roupas, atendendo às necessidades básicas dos que estão em
+situação de rua e promovendo maior conscientização sobre a crise social e
+ambiental no país. Acreditamos que, ao conectar pessoas dispostas a doar com
+aqueles que mais precisam, podemos fazer uma diferença significativa,
+promovendo a solidariedade e um futuro mais sustentável para todos.
