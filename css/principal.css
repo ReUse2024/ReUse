@@ -114,6 +114,13 @@ display: none;
     font-size: 1.2rem;
     line-height: 1.5;
 }
+h1 {
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo preto com opacidade */
+    color: #FCFCFC; /* Cor do texto */
+    padding: 10px; /* Espaçamento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
 
 /* Responsividade */
 @media (max-width: 768px) {
