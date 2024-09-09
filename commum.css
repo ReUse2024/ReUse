@@ -24,7 +24,7 @@
 
 /* Estilo do cabeçalho */
 header {
-  background-color: #ED4028;
+  background-color: var(--principal);
   display: flex;
   justify-content: space-between;
   align-items: center;
