@@ -18,11 +18,12 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: var(--preto);
+    background-color: var(--branco);
 }
 .content {
-    background-color: var(--branco);
+    background-color: var(--preto);
     border-radius: 15px;
+    
     width: 960px;
     height: 50%;
     justify-content: space-between;
