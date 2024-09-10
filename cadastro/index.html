@@ -9,6 +9,83 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap" rel="stylesheet">
+    <script type="module">
+      // Importar Firebase e Firestore
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+      import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+      
+      // Configuração do Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
+        authDomain: "reuse-b676c.firebaseapp.com",
+        projectId: "reuse-b676c",
+        storageBucket: "reuse-b676c.appspot.com",
+        messagingSenderId: "872063001296",
+        appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
+        measurementId: "G-0N6NYHQCTG"
+      };
+      
+      // Inicializar Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Função para lidar com o envio do formulário
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          // Obter dados do formulário
+          const nomeI = document.getElementById('nome').value;
+          const email = document.getElementById('email').value;
+          const tel = document.getElementById('telefone').value;
+          const endereco = document.getElementById('endereco').value;
+          const nomeR = document.getElementById('responsavel').value;
+          const senha = document.getElementById('password').value;
+          const passwordRepeat = document.getElementById('password-repeat').value;
+
+          // Verificar se as senhas coincidem
+          if (senha !== passwordRepeat) {
+            alert('As senhas não coincidem!');
+            return;
+          }
+          if (senha.length < 5 || !/\d/.test(senha) || !/[!@#$%^&*(),.?":{}|<>]/.test(senha)) {
+                    alert('A senha deve ter pelo menos 5 caracteres, conter números e um caractere especial.');
+                    return;
+                }
+
+          try {
+            // Adicionar documento ao Firestore
+            await addDoc(collection(db, 'userI'), {
+              email,
+              endereco,
+              nomeI,
+              nomeR,
+              senha,
+              tel
+            });
+
+            alert('Cadastro realizado com sucesso!');
+          } catch (error) {
+            console.error('Erro ao cadastrar:', error);
+            alert('Erro ao cadastrar. Tente novamente.');
+          }
+        });
+          // Máscara de telefone
+          document.getElementById('telefone').addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+                value = value.substring(0, 11); // Limita o tamanho a 11 caracteres
+
+                if (value.length <= 2) {
+                    e.target.value = value; // Exibe apenas o código de área
+                } else if (value.length <= 6) {
+                    e.target.value = `(${value.substring(0, 2)}) ${value.substring(2)}`; // Adiciona o código de área
+                } else {
+                    e.target.value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`; // Adiciona o hífen
+                }
+            });
+            
+      });
+    </script>
     <link rel="stylesheet" href="../commum.css">
     <link rel="stylesheet" href="../css/cadastro.css">
 </head>
@@ -32,7 +109,7 @@
         <div class="content">
             <div class="second-column">
                 <h2 class="title title-second">Cadastro da Instituição</h2>
-                <form class="form">
+                <form id="signup-form" class="form">
                     <label class="label-input" for="nome">
                         <i class="far fa-building icon-modify"></i>
                         <input type="text" id="nome" placeholder="Nome da Instituição" required>
@@ -68,12 +145,10 @@
                         <input type="password" id="password-repeat" placeholder="Repita sua senha!" required>
                     </label>
                     
-                    <button class="btn btn-second">Cadastrar</button>        
+                    <button class="btn btn-second" type="submit">Cadastrar</button>        
                 </form>
             </div>
         </div>
     </div>
-    <script src="js/app.js"></script>
-    <script src="../firebase.js"></script>
 </body>
 </html>
