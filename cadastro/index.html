@@ -3,158 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Cadastro da Instituição</title>
+    <title>Dashboard Principal da ONG</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap" rel="stylesheet">
-    <script type="module">
-      // Importar Firebase e Firestore
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-      import { getFirestore, collection, setDoc, doc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-      import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-      
-      // Configuração do Firebase
-      const firebaseConfig = {
-        apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap">
+    <style>
+        body {
+            font-family: 'Darker Grotesque', sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .dashboard-container {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .map-container {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Dashboard da ONG</h1>
+    </div>
+    <div>
+        <button onclick="window.location.href = '#perfil'">Editar Perfil</button>
+    </div>
+</header>
+
+<div class="dashboard-container">
+    <!-- Seção para cadastrar novo ponto -->
+    <div class="section">
+        <h2>Gerenciar Pontos de Distribuição</h2>
+        <button id="cadastrar-novo">Cadastrar Novo Ponto de Distribuição</button>
+    </div>
+
+    <!-- Seção para listar os pontos cadastrados -->
+    <div class="section">
+        <h2>Pontos de Distribuição Cadastrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do Local</th>
+                    <th>Endereço</th>
+                    <th>Itens Disponíveis</th>
+                </tr>
+            </thead>
+            <tbody id="pontos-lista">
+                <!-- Preenchido dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Seção para exibir mapa da ONG -->
+    <div class="section">
+        <h2>Localização da ONG</h2>
+        <div id="map" class="map-container"></div>
+    </div>
+
+    <!-- Seção para editar o perfil da ONG -->
+    <div id="perfil" class="section">
+        <h2>Editar Perfil da ONG</h2>
+        <form id="editar-perfil">
+            <label>Nome: <input type="text" id="nomeI" /></label><br>
+            <label>Descrição: <input type="text" id="descricao" /></label><br>
+            <label>Missão: <input type="text" id="missao" /></label><br>
+            <label>Endereço: <input type="text" id="endereco" /></label><br>
+            <label>Logo: <input type="file" id="logo" /></label><br>
+            <button type="submit">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=SUA_API_KEY&callback=initMap" async defer></script>
+<script type="module">
+    // Firebase setup
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
         authDomain: "reuse-b676c.firebaseapp.com",
         projectId: "reuse-b676c",
         storageBucket: "reuse-b676c.appspot.com",
         messagingSenderId: "872063001296",
-        appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
-        measurementId: "G-0N6NYHQCTG"
-      };
-      
-      // Inicializar Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
+        appId: "1:872063001296:web:5d06ed6e548fa117fe74d5"
+    };
 
-      // Função para lidar com o envio do formulário
-      document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-          e.preventDefault();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-          // Obter dados do formulário
-          const nomeI = document.getElementById('nome').value;
-          const email = document.getElementById('email').value;
-          const tel = document.getElementById('telefone').value;
-          const endereco = document.getElementById('endereco').value;
-          const nomeR = document.getElementById('responsavel').value;
-          const senha = document.getElementById('password').value;
-          const passwordRepeat = document.getElementById('password-repeat').value;
-
-          // Verificar se as senhas coincidem
-          if (senha !== passwordRepeat) {
-            alert('As senhas não coincidem!');
-            return;
-          }
-          if (senha.length < 5 || !/\d/.test(senha) || !/[!@#$%^&*(),.?":{}|<>]/.test(senha)) {
-            alert('A senha deve ter pelo menos 5 caracteres, conter números e um caractere especial.');
-            return;
-          }
-
-          try {
-            // Criar usuário na autenticação do Firebase
-            const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-            const user = userCredential.user;
-            
-            // Adicionar documento ao Firestore
-            await setDoc(doc(db, 'userI', user.uid), {
-              email,
-              endereco,
-              nomeI,
-              nomeR,
-              tel
-            });
-
-            alert('Cadastro realizado com sucesso!');
-            window.location.href = '../principallinst/index.html';
-          } catch (error) {
-            console.error('Erro ao cadastrar:', error);
-            alert('Erro ao cadastrar. Tente novamente.');
-          }
+    // Função para inicializar o mapa
+    let map;
+    function initMap() {
+        // Coordenadas padrão (você pode colocar coordenadas default)
+        const defaultLocation = { lat: -19.8157, lng: -43.9542 };
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: defaultLocation,
+            zoom: 14
         });
+    }
 
-        // Máscara de telefone
-        document.getElementById('telefone').addEventListener('input', (e) => {
-          let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
-          value = value.substring(0, 11); // Limita o tamanho a 11 caracteres
+    // Carregar dados da ONG
+    async function carregarDadosOng(uid) {
+        const docRef = doc(db, 'userI', uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const ongData = docSnap.data();
+            document.getElementById('nomeI').value = ongData.nomeI;
+            document.getElementById('endereco').value = ongData.endereco;
+            // Colocar o endereço no mapa
+            geocodeAddress(ongData.endereco);
+        } else {
+            console.log('Nenhum dado encontrado!');
+        }
+    }
 
-          if (value.length <= 2) {
-            e.target.value = value; // Exibe apenas o código de área
-          } else if (value.length <= 6) {
-            e.target.value = `(${value.substring(0, 2)}) ${value.substring(2)}`; // Adiciona o código de área
-          } else {
-            e.target.value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`; // Adiciona o hífen
-          }
+    // Função para buscar o endereço e exibir no mapa
+    function geocodeAddress(address) {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: address }, function (results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode falhou: ' + status);
+            }
         });
-      });
-    </script>
-    <link rel="stylesheet" href="../commum.css">
-    <link rel="stylesheet" href="../css/cadastro.css">
-</head>
-<body>
-    <header>
-        <a href="../index.html">
-            <img src="../img/logo01.png" alt="Logo" class="logo">
-        </a>
-        <nav>
-            <a href="#">Doações</a>
-            <a href="#">Bazares</a>
-            <a href="#">Institucional</a>
-            <a href="#">Campanhas</a>
-        </nav>
-        <div class="auth-buttons">
-            <button onclick="window.location.href='../login/index.html'">Entrar</button>
-        </div>
-    </header>
+    }
 
-    <div class="container">
-        <div class="content">
-            <div class="second-column">
-                <h2 class="title title-second">Cadastro da Instituição</h2>
-                <form id="signup-form" class="form">
-                    <label class="label-input" for="nome">
-                        <i class="far fa-building icon-modify"></i>
-                        <input type="text" id="nome" placeholder="Nome da Instituição" required>
-                    </label>
-                    
-                    <label class="label-input" for="email">
-                        <i class="far fa-envelope icon-modify"></i>
-                        <input type="email" id="email" placeholder="Email" required>
-                    </label>
-                    
-                    <label class="label-input" for="telefone">
-                        <i class="fas fa-phone icon-modify"></i>
-                        <input type="tel" id="telefone" placeholder="Telefone" required>
-                    </label>
-                    
-                    <label class="label-input" for="endereco">
-                        <i class="fas fa-map-marker-alt icon-modify"></i>
-                        <input type="text" id="endereco" placeholder="Endereço" required>
-                    </label>
-                    
-                    <label class="label-input" for="responsavel">
-                        <i class="far fa-user icon-modify"></i>
-                        <input type="text" id="responsavel" placeholder="Nome do Responsável" required>
-                    </label>
-                    
-                    <label class="label-input" for="password">
-                        <i class="fas fa-lock icon-modify"></i>
-                        <input type="password" id="password" placeholder="Senha" required>
-                    </label>
-
-                    <label class="label-input" for="password-repeat">
-                        <i class="fas fa-lock icon-modify"></i>
-                        <input type="password" id="password-repeat" placeholder="Repita sua senha!" required>
-                    </label>
-                    
-                    <button class="btn btn-second" type="submit">Cadastrar</button>        
-                </form>
-            </div>
-        </div>
-    </div>
+    // Simular login e carregar os dados
+    const ongUid = "UID_DA_ONG"; // Pegue o UID da ONG autenticada
+    carregarDadosOng(ongUid);
+</script>
 </body>
 </html>

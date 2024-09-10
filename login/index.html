@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="../commum.css">
     <link rel="stylesheet" href="../css/login.css">
 </head>
@@ -161,7 +162,7 @@
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
                     alert('Login bem-sucedido!');
-                    window.location.href = '../principallinst/index.html'; // Redireciona para a página principal
+                    window.location.href = '../principalinst/index.html'; // Redireciona para a página principal
                 } catch (error) {
                     console.error('Erro ao fazer login:', error);
                     document.getElementById('error-message').textContent = `Erro: ${error.message}`;
