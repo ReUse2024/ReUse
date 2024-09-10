@@ -7,20 +7,17 @@
     <title>Login</title>
     
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../commum.css">
-<link rel="stylesheet" href="../css/login.css">
-       
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../commum.css">
+    <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
     <header>
         <a href="../index.html">
-            <img src="../img/logo01.png " alt="Logo" class="logo">
+            <img src="../img/logo01.png" alt="Logo" class="logo">
         </a>
-        
         <nav>
             <a href="#">Doações</a>
             <a href="#">Bazares</a>
@@ -28,11 +25,9 @@
             <a href="#">Campanhas</a>
         </nav>
         <div class="auth-buttons">
-           
             <button onclick="window.location.href='../cadastro/index.html'">Cadastrar</button>
         </div>
     </header>
-
 
     <div class="container">
         <div class="content first-content">
@@ -64,25 +59,28 @@
                     </ul>
                 </div><!-- social media -->
                 <p class="description description-second">Digite seu e-mail:</p>
-                <form class="form">
-                    <label class="label-input" for="">
-                        <i class="far fa-user icon-modify"></i>
-                        <input type="text" placeholder="Name">
-                    </label>
-                    
-                    <label class="label-input" for="">
+                <form id="login-form" class="form">
+                    <label class="label-input">
                         <i class="far fa-envelope icon-modify"></i>
-                        <input type="email" placeholder="Email">
+                        <input type="email" id="login-email" placeholder="Email" required>
                     </label>
-                    
-                    <label class="label-input" for="">
+                    <label class="label-input">
                         <i class="fas fa-lock icon-modify"></i>
-                        <input type="password" placeholder="Password">
+                        <input type="password" id="login-password" placeholder="Senha" required>
                     </label>
-                    
-                    
-                    <button class="btn btn-second">sign up</button>        
+                    <a class="password" id="forgot-password-link" href="#">Esqueceu sua senha?</a>
+                    <button class="btn btn-second" type="submit">Entrar</button>
                 </form>
+                <form id="reset-password-form" class="form" style="display: none;">
+                    <label class="label-input">
+                        <i class="far fa-envelope icon-modify"></i>
+                        <input type="email" id="reset-email" placeholder="Email" required>
+                    </label>
+                    <button class="btn btn-second" type="submit">Redefinir Senha</button>
+                    <button type="button" id="cancel-reset" class="btn btn-cancel">Cancelar</button>
+                </form>
+                <p id="error-message" style="color: red;"></p>
+                
             </div><!-- second column -->
         </div><!-- first content -->
         <div class="content second-content">
@@ -114,26 +112,92 @@
                     </ul>
                 </div><!-- social media -->
                 <p class="description description-second">or use your email account:</p>
-                <form class="form">
-                
-                    <label class="label-input" for="">
+                <form id="login-form-1" class="form">
+                    <label class="label-input">
                         <i class="far fa-envelope icon-modify"></i>
-                        <input type="email" placeholder="Email">
+                        <input type="email" id="login-email-1" placeholder="Email" required>
                     </label>
-                
-                    <label class="label-input" for="">
-                        <i class="fas fa-lock icon-modify"></i>
-                        <input type="password" placeholder="Password">
-                    </label>
-                
-                    <a class="password" href="#">forgot your password?</a>
-                    <button class="btn btn-second">sign in</button>
+                    <!-- ...restante do código... -->
                 </form>
+                
+                <form id="login-form-2" class="form">
+                    <label class="label-input">
+                        <i class="far fa-envelope icon-modify"></i>
+                        <input type="email" id="login-email-2" placeholder="Email" required>
+                    </label>
+                    <!-- ...restante do código... -->
+                </form>
+                
             </div><!-- second column -->
         </div><!-- second-content -->
     </div>
-    <script src="js/app.js"></script>
-    <script src="../firebase.js"></script>
 
+    <!-- Incluindo o Firebase diretamente do CDN -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
+            authDomain: "reuse-b676c.firebaseapp.com",
+            projectId: "reuse-b676c",
+            storageBucket: "reuse-b676c.appspot.com",
+            messagingSenderId: "872063001296",
+            appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
+            measurementId: "G-0N6NYHQCTG"
+        };
+    
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            // Login Form Submit
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+    
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert('Login bem-sucedido!');
+                    window.location.href = '../principallinst/index.html'; // Redireciona para a página principal
+                } catch (error) {
+                    console.error('Erro ao fazer login:', error);
+                    document.getElementById('error-message').textContent = `Erro: ${error.message}`;
+                }
+            });
+
+            // Password Reset Form Submit
+            document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('reset-email').value;
+
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert('Email de redefinição de senha enviado!');
+                    document.getElementById('reset-password-form').reset();
+                    document.getElementById('reset-password-form').style.display = 'none';
+                } catch (error) {
+                    console.error('Erro ao enviar email de redefinição:', error);
+                    document.getElementById('error-message').textContent = `Erro: ${error.message}`;
+                }
+            });
+
+            // Show/Hide Password Reset Form
+            document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('reset-password-form').style.display = 'block';
+            });
+
+            document.getElementById('cancel-reset').addEventListener('click', () => {
+                document.getElementById('reset-password-form').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+            });
+        });
+    </script>
+    
+    <script src="../firebase.js"></script>
 </body>
 </html>
