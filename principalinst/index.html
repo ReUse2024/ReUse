@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
         const firebaseConfig = {
@@ -34,11 +34,10 @@
             const docSnap = await getDoc(ongRef);
             if (docSnap.exists()) {
                 const ongData = docSnap.data();
-                console.log(ongData); // Verifique os dados retornados
                 document.getElementById('nome-ong').textContent = ongData.nomeI || 'Nome não disponível';
                 document.getElementById('endereco-ong').textContent = ongData.endereco || 'Endereço não disponível';
                 initMap(ongData.endereco);
-                carregarPontosDistribuicao(uid);
+                carregarPontosDistribuicao(uid); // Carregar pontos ao entrar na página
             } else {
                 console.log('Nenhum dado encontrado!');
             }
@@ -47,6 +46,7 @@
         async function carregarPontosDistribuicao(uid) {
             const pontosRef = collection(db, 'pontosDistribuicao');
             const querySnapshot = await getDocs(pontosRef);
+            document.querySelector('.section').innerHTML = ''; // Limpa a seção antes de renderizar
             querySnapshot.forEach((doc) => {
                 const ponto = doc.data();
                 const pontoCard = document.createElement('div');
@@ -54,13 +54,20 @@
                 pontoCard.innerHTML = `
                     <h3>Nome do Local: ${ponto.nome}</h3>
                     <p>Endereço: ${ponto.endereco}</p>
+                    <p>Telefone: ${ponto.telefone || 'Telefone não disponível'}</p>
                     <div id="map${doc.id}" class="map"></div>
                     <p>Itens Disponíveis: ${ponto.itens}</p>
-                    <button class="btn-secondary">Editar Ponto</button>
+                    <button class="btn-secondary" onclick="excluirPonto('${doc.id}')">Excluir Ponto</button>
                 `;
                 document.querySelector('.section').appendChild(pontoCard);
                 initMapPonto(ponto.endereco, doc.id);
             });
+        }
+
+        async function excluirPonto(pontoId) {
+            const pontoRef = doc(db, 'pontosDistribuicao', pontoId);
+            await deleteDoc(pontoRef);
+            carregarPontosDistribuicao(auth.currentUser.uid); // Recarregar a lista após exclusão
         }
 
         function initMapPonto(endereco, id) {
@@ -91,12 +98,13 @@
                 .catch(error => console.error('Erro na geocodificação:', error));
         }
 
-        async function adicionarPonto(nome, endereco, itens) {
+        async function adicionarPonto(nome, endereco, itens, telefone) {
             const uid = auth.currentUser.uid;
             await addDoc(collection(db, 'pontosDistribuicao'), {
                 nome,
                 endereco,
                 itens,
+                telefone,
                 uid
             });
             carregarPontosDistribuicao(uid);
@@ -122,8 +130,9 @@
             const nome = prompt('Nome do ponto de distribuição:');
             const endereco = prompt('Endereço do ponto de distribuição:');
             const itens = prompt('Quantidade de itens disponíveis:');
-            if (nome && endereco && itens) {
-                adicionarPonto(nome, endereco, itens);
+            const telefone = prompt('Telefone para contato:');
+            if (nome && endereco && itens && telefone) {
+                adicionarPonto(nome, endereco, itens, telefone);
             }
         }
 
@@ -171,26 +180,15 @@
                 <p id="endereco-ong">Endereço da ONG</p>
 
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao">Nossa ONG ajuda famílias em situação de vulnerabilidade.</textarea>
+                <textarea id="descricao">Nossa ONG ajuda milhares de pessoas com a distribuição de roupas.</textarea>
 
-                <label for="missao">Missão:</label>
-                <input type="text" id="missao" value="Ajudar quem mais precisa.">
-
-                <label for="logo">Logo da ONG:</label>
-                <input type="file" id="logo">
-
-                <button type="submit" class="btn-primary">Salvar Alterações</button>
+                <button type="submit" class="btn-secondary">Salvar Alterações</button>
             </form>
         </div>
     </div>
-    <script>
-        function signOut() {
-            auth.signOut().then(() => {
-                window.location.href = '../login/index.html';
-            }).catch((error) => {
-                console.error('Erro ao sair:', error);
-            });
-        }
-    </script>
+
+    <footer>
+        <p>ReUse &copy; 2023 - Todos os direitos reservados.</p>
+    </footer>
 </body>
 </html>
