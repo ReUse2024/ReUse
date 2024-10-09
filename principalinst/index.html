@@ -37,7 +37,7 @@
                 document.getElementById('nome-ong').textContent = ongData.nomeI || 'Nome não disponível';
                 document.getElementById('endereco-ong').textContent = ongData.endereco || 'Endereço não disponível';
                 initMap(ongData.endereco);
-                carregarPontosDistribuicao(uid); // Carregar pontos ao entrar na página
+                carregarPontosDistribuicao(uid);
             } else {
                 console.log('Nenhum dado encontrado!');
             }
@@ -46,28 +46,31 @@
         async function carregarPontosDistribuicao(uid) {
             const pontosRef = collection(db, 'pontosDistribuicao');
             const querySnapshot = await getDocs(pontosRef);
-            document.querySelector('.section').innerHTML = ''; // Limpa a seção antes de renderizar
+            document.querySelector('.section.pontos').innerHTML = ''; // Limpa a seção antes de renderizar
+
             querySnapshot.forEach((doc) => {
                 const ponto = doc.data();
-                const pontoCard = document.createElement('div');
-                pontoCard.className = 'ponto-card';
-                pontoCard.innerHTML = `
-                    <h3>Nome do Local: ${ponto.nome}</h3>
-                    <p>Endereço: ${ponto.endereco}</p>
-                    <p>Telefone: ${ponto.telefone || 'Telefone não disponível'}</p>
-                    <div id="map${doc.id}" class="map"></div>
-                    <p>Itens Disponíveis: ${ponto.itens}</p>
-                    <button class="btn-secondary" onclick="excluirPonto('${doc.id}')">Excluir Ponto</button>
-                `;
-                document.querySelector('.section').appendChild(pontoCard);
-                initMapPonto(ponto.endereco, doc.id);
+                if (ponto.uid === uid) {
+                    const pontoCard = document.createElement('div');
+                    pontoCard.className = 'ponto-card';
+                    pontoCard.innerHTML = `
+                        <h3>Nome do Local: ${ponto.nome}</h3>
+                        <p>Endereço: ${ponto.endereco}</p>
+                        <p>Telefone: ${ponto.telefone || 'Telefone não disponível'}</p>
+                        <div id="map${doc.id}" class="map" style="height: 200px;"></div>
+                        <p>Itens Disponíveis: ${ponto.itens}</p>
+                        <button class="btn-secondary" onclick="excluirPonto('${doc.id}')">Excluir Ponto</button>
+                    `;
+                    document.querySelector('.section.pontos').appendChild(pontoCard);
+                    initMapPonto(ponto.endereco, doc.id);
+                }
             });
         }
 
         async function excluirPonto(pontoId) {
             const pontoRef = doc(db, 'pontosDistribuicao', pontoId);
             await deleteDoc(pontoRef);
-            carregarPontosDistribuicao(auth.currentUser.uid); // Recarregar a lista após exclusão
+            carregarPontosDistribuicao(auth.currentUser.uid);
         }
 
         function initMapPonto(endereco, id) {
@@ -92,7 +95,7 @@
                             .bindPopup(address)
                             .openPopup();
                     } else {
-                        alert('Endereço não encontrado!');
+                        console.error('Endereço não encontrado!');
                     }
                 })
                 .catch(error => console.error('Erro na geocodificação:', error));
@@ -157,7 +160,7 @@
             <button class="btn-primary" onclick="cadastrarPonto()">Cadastrar Novo Ponto de Distribuição</button>
         </div>
 
-        <div class="section">
+        <div class="section pontos">
             <h2>Pontos Cadastrados</h2>
             <!-- Pontos serão carregados dinamicamente -->
         </div>
@@ -188,7 +191,7 @@
     </div>
 
     <footer>
-        <p>ReUse &copy; 2023 - Todos os direitos reservados.</p>
+        <p>ReUse &copy; 2024. Todos os direitos reservados.</p>
     </footer>
 </body>
 </html>
