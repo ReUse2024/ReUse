@@ -1,5 +1,5 @@
   // Importar Firebase e Firestore
-  import { db, auth } from './firebaseConfig.js';
+  import { db, auth } from '/firebase.js';
   import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
   import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
