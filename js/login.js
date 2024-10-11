@@ -1,19 +1,7 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+import { db, auth } from './firebaseConfig.js';
+import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
-    authDomain: "reuse-b676c.firebaseapp.com",
-    projectId: "reuse-b676c",
-    storageBucket: "reuse-b676c.appspot.com",
-    messagingSenderId: "872063001296",
-    appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
-    measurementId: "G-0N6NYHQCTG"
-};
-
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', () => {
     // Login Form Submit

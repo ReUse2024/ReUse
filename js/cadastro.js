@@ -1,23 +1,7 @@
   // Importar Firebase e Firestore
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-  import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-  import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-  
-  // Configuração do Firebase
-  const firebaseConfig = {
-      apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
-      authDomain: "reuse-b676c.firebaseapp.com",
-          projectId: "reuse-b676c",
-      storageBucket: "reuse-b676c.appspot.com",
-      messagingSenderId: "872063001296",
-          appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
-          measurementId: "G-0N6NYHQCTG"
-  };
-  
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
+  import { db, auth } from './firebaseConfig.js';
+  import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
   // Função para lidar com o envio do formulário
   document.addEventListener('DOMContentLoaded', () => {
