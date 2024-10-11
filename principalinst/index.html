@@ -10,137 +10,6 @@
     <link rel="stylesheet" href="../commum.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBf6721C4LLhYRcmwgOQbdqQgOiDLzDPhk",
-            authDomain: "reuse-b676c.firebaseapp.com",
-            projectId: "reuse-b676c",
-            storageBucket: "reuse-b676c.appspot.com",
-            messagingSenderId: "872063001296",
-            appId: "1:872063001296:web:5d06ed6e548fa117fe74d5",
-            measurementId: "G-0N6NYHQCTG"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        async function carregarDadosOng(uid) {
-            const ongRef = doc(db, 'userI', uid);
-            const docSnap = await getDoc(ongRef);
-            if (docSnap.exists()) {
-                const ongData = docSnap.data();
-                document.getElementById('nome-ong').textContent = ongData.nomeI || 'Nome não disponível';
-                document.getElementById('endereco-ong').textContent = ongData.endereco || 'Endereço não disponível';
-                initMap(ongData.endereco);
-                carregarPontosDistribuicao(uid);
-            } else {
-                console.log('Nenhum dado encontrado!');
-            }
-        }
-
-        async function carregarPontosDistribuicao(uid) {
-            const pontosRef = collection(db, 'pontosDistribuicao');
-            const querySnapshot = await getDocs(pontosRef);
-            document.querySelector('.section.pontos').innerHTML = ''; // Limpa a seção antes de renderizar
-
-            querySnapshot.forEach((doc) => {
-                const ponto = doc.data();
-                if (ponto.uid === uid) {
-                    const pontoCard = document.createElement('div');
-                    pontoCard.className = 'ponto-card';
-                    pontoCard.innerHTML = `
-                        <h3>Nome do Local: ${ponto.nome}</h3>
-                        <p>Endereço: ${ponto.endereco}</p>
-                        <p>Telefone: ${ponto.telefone || 'Telefone não disponível'}</p>
-                        <div id="map${doc.id}" class="map" style="height: 200px;"></div>
-                        <p>Itens Disponíveis: ${ponto.itens}</p>
-                        <button class="btn-secondary" onclick="excluirPonto('${doc.id}')">Excluir Ponto</button>
-                    `;
-                    document.querySelector('.section.pontos').appendChild(pontoCard);
-                    initMapPonto(ponto.endereco, doc.id);
-                }
-            });
-        }
-
-        async function excluirPonto(pontoId) {
-            const pontoRef = doc(db, 'pontosDistribuicao', pontoId);
-            await deleteDoc(pontoRef);
-            carregarPontosDistribuicao(auth.currentUser.uid);
-        }
-
-        function initMapPonto(endereco, id) {
-            const map = L.map(`map${id}`).setView([-23.55052, -46.633308], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            geocodeAddress(endereco, map);
-        }
-
-        function geocodeAddress(address, map) {
-            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const result = data[0];
-                        const lat = parseFloat(result.lat);
-                        const lon = parseFloat(result.lon);
-                        const center = [lat, lon];
-                        map.setView(center, 14);
-                        L.marker(center).addTo(map)
-                            .bindPopup(address)
-                            .openPopup();
-                    } else {
-                        console.error('Endereço não encontrado!');
-                    }
-                })
-                .catch(error => console.error('Erro na geocodificação:', error));
-        }
-
-        async function adicionarPonto(nome, endereco, itens, telefone) {
-            const uid = auth.currentUser.uid;
-            await addDoc(collection(db, 'pontosDistribuicao'), {
-                nome,
-                endereco,
-                itens,
-                telefone,
-                uid
-            });
-            carregarPontosDistribuicao(uid);
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                carregarDadosOng(user.uid);
-            } else {
-                window.location.href = '../login/index.html';
-            }
-        });
-
-        function initMap(endereco) {
-            const map = L.map('map').setView([-23.55052, -46.633308], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            geocodeAddress(endereco, map);
-        }
-
-        function cadastrarPonto() {
-            const nome = prompt('Nome do ponto de distribuição:');
-            const endereco = prompt('Endereço do ponto de distribuição:');
-            const itens = prompt('Quantidade de itens disponíveis:');
-            const telefone = prompt('Telefone para contato:');
-            if (nome && endereco && itens && telefone) {
-                adicionarPonto(nome, endereco, itens, telefone);
-            }
-        }
-
-        window.cadastrarPonto = cadastrarPonto; // Torna a função disponível globalmente
-    </script>
 </head>
 <body>
     <header>
@@ -157,41 +26,20 @@
 
     <div class="container">
         <div class="actions">
-            <button class="btn-primary" onclick="cadastrarPonto()">Cadastrar Novo Ponto de Distribuição</button>
+            <button class="btn-primary" onclick="cadastrarPonto()">Cadastrar Ponto de Distribuição</button>
+        </div>
+
+        <div class="section">
+            <h2>Bem-vindo, <span id="nome-ong">Nome da ONG</span></h2>
+            <p id="endereco-ong">Endereço da ONG</p>
+            <div id="map" style="height: 300px;"></div>
         </div>
 
         <div class="section pontos">
-            <h2>Pontos Cadastrados</h2>
-            <!-- Pontos serão carregados dinamicamente -->
-        </div>
-
-        <div class="section">
-            <h2>Notificações</h2>
-            <ul>
-                <li>Pedido de doação recebido de Maria Silva</li>
-                <li>Voluntário João Pereira ofereceu ajuda para o evento de coleta</li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2>Editar Perfil</h2>
-            <form class="edit-form">
-                <label for="nome-ong">Nome da ONG:</label>
-                <p id="nome-ong">Nome da ONG</p>
-
-                <label for="endereco-ong">Endereço:</label>
-                <p id="endereco-ong">Endereço da ONG</p>
-
-                <label for="descricao">Descrição:</label>
-                <textarea id="descricao">Nossa ONG ajuda milhares de pessoas com a distribuição de roupas.</textarea>
-
-                <button type="submit" class="btn-secondary">Salvar Alterações</button>
-            </form>
+            <h2>Pontos de Distribuição</h2>
+            <div id="pontos-list"></div> <!-- Adicionado para exibir os pontos -->
         </div>
     </div>
-
-    <footer>
-        <p>ReUse &copy; 2024. Todos os direitos reservados.</p>
-    </footer>
+    <script type="module" src="../js/principalPd.js"></script>
 </body>
 </html>
