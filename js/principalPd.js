@@ -18,48 +18,58 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Funções principais
+
+// Função para carregar pontos de distribuição
+async function carregarPontosDistribuicao(uid) {
+    console.log(`Carregando pontos de distribuição para o usuário com UID: ${uid}`);
+    const pontosRef = collection(db, 'userI', uid, 'pontos');
+    const pontosSnap = await getDocs(pontosRef);
+    console.log('Documentos de pontos:', pontosSnap.docs); // Verifique se existem documentos
+
+    const pontosList = document.getElementById('pontos-list');
+    pontosList.innerHTML = '';
+
+    // Atraso para garantir que a renderização ocorra após a carga dos dados
+    setTimeout(() => {
+        if (!pontosSnap.empty) {
+            pontosSnap.forEach((doc) => {
+                const ponto = doc.data();
+                const pontoId = doc.id;
+
+                const pontoDiv = document.createElement('div');
+                pontoDiv.innerHTML = `
+                    <h3>${ponto.nome}</h3>
+                    <p>Endereço: ${ponto.endereco}</p>
+                    <p>Quantidade de Itens: ${ponto.itens}</p>
+                    <p>Telefone: ${ponto.telefone}</p>
+                    <button onclick="excluirPonto('${uid}', '${pontoId}')">Excluir</button>
+                    <div id="map-${pontoId}" style="height: 200px; width: 100%;"></div>
+                `;
+                pontosList.appendChild(pontoDiv);
+
+                initMap(ponto.endereco, `map-${pontoId}`);
+            });
+        } else {
+            pontosList.innerHTML = '<p>Nenhum ponto de distribuição encontrado para o usuário.</p>';
+        }
+    }, 100); // Atraso de 100ms
+}
+
+// Função para carregar dados da ONG
 async function carregarDadosOng(uid) {
+    console.log(`Carregando dados para a ONG com UID: ${uid}`);
     const ongRef = doc(db, 'userI', uid);
     const docSnap = await getDoc(ongRef);
+    carregarPontosDistribuicao(uid);
     if (docSnap.exists()) {
         const ongData = docSnap.data();
+        console.log('Dados da ONG:', ongData);
         document.getElementById('nome-ong').textContent = ongData.nomeR || 'Nome não disponível';
         document.getElementById('endereco-ong').textContent = ongData.endereco || 'Endereço não disponível';
         initMap(ongData.endereco);
         await carregarPontosDistribuicao(uid);
     } else {
         console.log('Nenhum dado encontrado para a ONG!');
-    }
-}
-
-async function carregarPontosDistribuicao(uid) {
-    const pontosRef = collection(db, 'userI', uid, 'pontos');
-    const pontosSnap = await getDocs(pontosRef);
-
-    const pontosList = document.getElementById('pontos-list');
-    pontosList.innerHTML = '';
-
-    if (!pontosSnap.empty) {
-        pontosSnap.forEach((doc) => {
-            const ponto = doc.data();
-            const pontoId = doc.id;
-
-            const pontoDiv = document.createElement('div');
-            pontoDiv.innerHTML = `
-                <h3>${ponto.nome}</h3>
-                <p>Endereço: ${ponto.endereco}</p>
-                <p>Quantidade de Itens: ${ponto.itens}</p>
-                <p>Telefone: ${ponto.telefone}</p>
-                <button onclick="excluirPonto('${uid}', '${pontoId}')">Excluir</button>
-                <div id="map-${pontoId}" style="height: 200px; width: 100%;"></div>
-            `;
-            pontosList.appendChild(pontoDiv);
-
-            initMap(ponto.endereco, `map-${pontoId}`);
-        });
-    } else {
-        pontosList.innerHTML = '<p>Nenhum ponto de distribuição encontrado para o usuário.</p>';
     }
 }
 
@@ -92,6 +102,7 @@ function geocodeAddress(address, map) {
         .catch(error => console.error('Erro na geocodificação:', error));
 }
 
+// Função para adicionar ponto
 async function adicionarPonto(nome, endereco, itens, telefone) {
     const uid = auth.currentUser.uid;
     await addDoc(collection(db, 'userI', uid, 'pontos'), {
@@ -138,10 +149,13 @@ window.fecharForm = function() {
     if (form) form.remove();
 }
 
+// Monitorar mudanças de autenticação
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        console.log(`Usuário logado: ${user.uid}`);
         carregarDadosOng(user.uid);
     } else {
+        console.log('Nenhum usuário logado. Redirecionando para a página de login.');
         window.location.href = '../login/index.html';
     }
 });
